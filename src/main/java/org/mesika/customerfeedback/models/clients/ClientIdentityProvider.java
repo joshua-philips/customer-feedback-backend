@@ -1,6 +1,6 @@
 package org.mesika.customerfeedback.models.clients;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -14,7 +14,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -32,7 +34,7 @@ public class ClientIdentityProvider {
     private UUID id;
 
     @Column(name = "verify_url", nullable = false)
-    private String verifyUrl; // Changed to camelCase
+    private String verifyUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "verification_strategy", nullable = false, length = 20)
@@ -58,13 +60,16 @@ public class ClientIdentityProvider {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(name = "last_modified", insertable = false)
-    private LocalDateTime lastModified;
+    private Instant lastModified;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false, length = 50)
     private String createdBy;
+
+    @OneToOne(mappedBy = "identityProvider", fetch = FetchType.LAZY)
+    private Client client;
 }

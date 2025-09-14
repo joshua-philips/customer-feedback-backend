@@ -1,6 +1,6 @@
 package org.mesika.customerfeedback.models.auth;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -44,15 +44,15 @@ public class PasswordResetToken {
     private ApplicationUser user;
 
     @Column(name = "expiry_date", nullable = false)
-    private LocalDateTime expiryDate;
+    private Instant expiryDate;
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(name = "last_modified", insertable = false)
-    private LocalDateTime lastModified;
+    private Instant lastModified;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false, length = 50)
@@ -73,7 +73,7 @@ public class PasswordResetToken {
         return EXPIRATION;
     }
 
-    private LocalDateTime calculateExpiryDate(int expiryTimeInMinutes) {
-        return LocalDateTime.now().plusMinutes(expiryTimeInMinutes);
+    private Instant calculateExpiryDate(int expiryTimeInMinutes) {
+        return Instant.now().plusSeconds(expiryTimeInMinutes * 60);
     }
 }

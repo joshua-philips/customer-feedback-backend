@@ -1,6 +1,6 @@
 package org.mesika.customerfeedback.models.auth;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Set;
 import java.util.UUID;
 
@@ -59,11 +59,11 @@ public class ApplicationUser {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(name = "last_modified", insertable = false)
-    private LocalDateTime lastModified;
+    private Instant lastModified;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false, length = 50)

@@ -1,6 +1,6 @@
 package org.mesika.customerfeedback.models.tickets;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -36,7 +36,6 @@ import lombok.NoArgsConstructor;
 public class Ticket {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
-
     private UUID id;
 
     @Column(name = "customer_name", length = 100)
@@ -72,11 +71,11 @@ public class Ticket {
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
-    private LocalDateTime createdDate;
+    private Instant createdDate;
 
     @LastModifiedDate
     @Column(name = "last_modified", insertable = false)
-    private LocalDateTime lastModified;
+    private Instant lastModified;
 
     @CreatedBy
     @Column(name = "created_by", updatable = false, length = 50)
