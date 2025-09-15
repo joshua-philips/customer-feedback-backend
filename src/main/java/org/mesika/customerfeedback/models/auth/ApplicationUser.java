@@ -71,4 +71,10 @@ public class ApplicationUser {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    @Column(name = "mfa_enabled")
+    private boolean mfaEnabled;
+
+    @Column(name = "mfa_secret")
+    private String mfaSecret;
 }

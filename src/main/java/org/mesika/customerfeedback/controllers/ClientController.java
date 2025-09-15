@@ -3,6 +3,7 @@ package org.mesika.customerfeedback.controllers;
 import java.util.List;
 import java.util.UUID;
 
+import org.mesika.customerfeedback.dto.CustomPage;
 import org.mesika.customerfeedback.dto.DefaultDTO;
 import org.mesika.customerfeedback.dto.client.ClientDTO;
 import org.mesika.customerfeedback.dto.client.ClientIdentityProviderDTO;
@@ -53,9 +54,12 @@ public class ClientController {
     }
 
     @GetMapping("/identity-provider/list")
-    public ResponseEntity<List<ClientIdentityProviderDTO>> listClientIDPs(
-            @RequestParam(name = "client_id") UUID clientId) {
-        return ResponseEntity.ok(clientService.listClientIDPs(clientId));
+    public ResponseEntity<CustomPage<ClientIdentityProviderDTO>> listClientIDPs(
+            @RequestParam(name = "client_id") UUID clientId,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(name = "page_size", defaultValue = "100") int pageSize) {
+        return ResponseEntity.ok(clientService
+                .listClientIDPs(clientId, page, pageSize));
 
     }
 

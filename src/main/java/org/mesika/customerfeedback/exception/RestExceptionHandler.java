@@ -5,7 +5,6 @@ import java.text.ParseException;
 import java.util.NoSuchElementException;
 
 import javax.security.auth.login.AccountNotFoundException;
-import javax.security.sasl.AuthenticationException;
 
 import org.mesika.customerfeedback.dto.DefaultDTO;
 import org.slf4j.Logger;
@@ -13,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
@@ -49,8 +49,8 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                         AuthenticationException exception) {
                 log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
-                                new DefaultDTO(exception.getMessage(), HttpStatus.UNAUTHORIZED.value()),
-                                HttpStatus.UNAUTHORIZED);
+                                new DefaultDTO(exception.getMessage(), HttpStatus.FORBIDDEN.value()),
+                                HttpStatus.FORBIDDEN);
         }
 
         @ExceptionHandler(SQLIntegrityConstraintViolationException.class)

@@ -14,7 +14,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -70,6 +69,6 @@ public class ClientIdentityProvider {
     @Column(name = "created_by", updatable = false, length = 50)
     private String createdBy;
 
-    @OneToOne(mappedBy = "identityProvider", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "identityProvider")
     private Client client;
 }

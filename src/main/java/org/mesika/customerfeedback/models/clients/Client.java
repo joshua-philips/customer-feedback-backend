@@ -10,14 +10,14 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -43,15 +43,14 @@ public class Client {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(name = "client_modules", joinColumns = @JoinColumn(name = "client_id"), inverseJoinColumns = @JoinColumn(name = "module_id"))
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "client", cascade = { CascadeType.MERGE, CascadeType.DETACH })
     private Set<Module> modules;
 
     @Column(length = 500)
     private String description;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "identity_provider_id")
+    @OneToOne
+    @JoinColumn(name = "identity_provider_id", unique = true)
     private ClientIdentityProvider identityProvider;
 
     @CreatedDate
