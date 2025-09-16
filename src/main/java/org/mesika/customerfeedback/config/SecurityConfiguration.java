@@ -22,33 +22,37 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @EnableMethodSecurity
 public class SecurityConfiguration {
-    private final AuthenticationProvider authenticationProvider;
-    private final JwtAuthenticationFilter jwtFilter;
+        private final AuthenticationProvider authenticationProvider;
+        private final JwtAuthenticationFilter jwtFilter;
 
-    @Autowired
-    @Qualifier("delegatedAuthenticationEntryPoint")
-    private AuthenticationEntryPoint authEntryPoint;
+        @Autowired
+        @Qualifier("delegatedAuthenticationEntryPoint")
+        private AuthenticationEntryPoint authEntryPoint;
 
-    private final String[] anyMatchers = {
-            "/", "/auth/**", "/api-docs", "/swagger-ui/**",
-            "/v3/api-docs/**", "/bus/v3/api-docs/**"
-    };
+        private final String[] anyMatchers = {
+                        "/", "/auth/**", "/api-docs", "/swagger-ui/**",
+                        "/v3/api-docs/**", "/bus/v3/api-docs/**"
+        };
 
-    @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.cors(Customizer.withDefaults())
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(req -> req.requestMatchers(anyMatchers)
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exc -> exc.authenticationEntryPoint(authEntryPoint));
+        private String[] adminMatchers = {};
 
-        return http.build();
+        @Bean
+        SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+                http.cors(Customizer.withDefaults())
+                                .csrf(AbstractHttpConfigurer::disable)
+                                .authorizeHttpRequests(req -> req.requestMatchers(anyMatchers)
+                                                .permitAll()
+                                                .requestMatchers(adminMatchers)
+                                                .hasAuthority("System Administrator")
+                                                .anyRequest()
+                                                .authenticated())
+                                .sessionManagement(session -> session
+                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                                .exceptionHandling(exc -> exc.authenticationEntryPoint(authEntryPoint));
 
-    }
+                return http.build();
+
+        }
 }

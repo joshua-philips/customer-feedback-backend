@@ -1,4 +1,4 @@
-package org.mesika.customerfeedback.services.client;
+package org.mesika.customerfeedback.services.auth;
 
 import java.util.Map;
 
@@ -35,6 +35,7 @@ public class ClientAuthService {
         return callClientAuthApi(idp, token);
     }
 
+    @SuppressWarnings("unchecked")
     private ClientAuthResponse callClientAuthApi(ClientIdentityProvider idp, String token) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
@@ -102,6 +103,7 @@ public class ClientAuthService {
         return authResponse;
     }
 
+    @SuppressWarnings("unchecked")
     private String extractValueFromResponse(Map<String, Object> response, String path) {
         // Simple path resolution (e.g., "user.id" or "data.roles")
         String[] parts = path.split("\\.");

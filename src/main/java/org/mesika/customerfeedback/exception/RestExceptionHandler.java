@@ -4,14 +4,13 @@ import java.sql.SQLIntegrityConstraintViolationException;
 import java.text.ParseException;
 import java.util.NoSuchElementException;
 
-import javax.security.auth.login.AccountNotFoundException;
-
 import org.mesika.customerfeedback.dto.DefaultDTO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -94,11 +93,30 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<Object> handleDataIntegrityViolationException(HttpServletRequest request,
-                        AccountNotFoundException exception) {
+                        DataIntegrityViolationException exception) {
                 log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(),
                                                 HttpStatus.BAD_REQUEST.value()),
+                                HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(AuthorizationDeniedException.class)
+        public ResponseEntity<Object> handleAuthorizationDeniedException(HttpServletRequest request,
+                        AuthorizationDeniedException exception) {
+                log.info(exception.getClass() + ": " + exception.getMessage());
+                return new ResponseEntity<Object>(
+                                new DefaultDTO(exception.getMessage(),
+                                                HttpStatus.BAD_REQUEST.value()),
+                                HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(UsernameAlreadyExistsException.class)
+        public ResponseEntity<Object> handleUsernameAlreadyExistsException(HttpServletRequest request,
+                        UsernameAlreadyExistsException exception) {
+                log.info(exception.getClass() + ": " + exception.getMessage());
+                return new ResponseEntity<Object>(
+                                new DefaultDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value()),
                                 HttpStatus.BAD_REQUEST);
         }
 

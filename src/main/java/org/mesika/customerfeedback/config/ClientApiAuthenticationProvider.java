@@ -6,7 +6,7 @@ import java.util.stream.Collectors;
 
 import org.mesika.customerfeedback.dto.client.ClientAuthRequest;
 import org.mesika.customerfeedback.dto.client.ClientAuthResponse;
-import org.mesika.customerfeedback.services.client.ClientAuthService;
+import org.mesika.customerfeedback.services.auth.ClientAuthService;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

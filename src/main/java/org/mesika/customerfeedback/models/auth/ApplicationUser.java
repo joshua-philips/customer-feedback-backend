@@ -1,6 +1,7 @@
 package org.mesika.customerfeedback.models.auth;
 
 import java.time.Instant;
+import java.util.Collection;
 import java.util.Set;
 import java.util.UUID;
 
@@ -9,6 +10,8 @@ import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -29,7 +32,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder
 @EntityListeners(AuditingEntityListener.class)
-public class ApplicationUser {
+public class ApplicationUser implements UserDetails {
     @Id
     @UuidGenerator(style = UuidGenerator.Style.RANDOM)
     private UUID id;
@@ -77,4 +80,9 @@ public class ApplicationUser {
 
     @Column(name = "mfa_secret")
     private String mfaSecret;
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return roles;
+    }
 }
