@@ -2,8 +2,11 @@ package org.mesika.customerfeedback.config;
 
 import java.io.IOException;
 
+import org.mesika.customerfeedback.dto.DefaultDTO;
 import org.mesika.customerfeedback.dto.client.ClientAuthRequest;
 import org.mesika.customerfeedback.services.auth.JwtService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
@@ -14,6 +17,10 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -27,6 +34,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private final JwtService jwtService;
     private final UserDetailsService userDetailsService;
     private final ClientApiAuthenticationProvider clientAuthProvider;
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -38,12 +46,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        if (isStaffRequest(request.getRequestURI())) {
-            handleStaffAuthentication(authHeader, request);
-        } else {
-            handleClientAuthentication(authHeader, request, response); // Pass response parameter
+        try {
+            if (isStaffRequest(request.getRequestURI())) {
+                handleStaffAuthentication(authHeader, request);
+            } else {
+                handleClientAuthentication(authHeader, request, response);
+            }
+            filterChain.doFilter(request, response);
+        } catch (ExpiredJwtException ex) {
+            handleJwtException(response, "JWT token has expired", HttpStatus.UNAUTHORIZED);
+        } catch (JwtException | IllegalArgumentException ex) {
+            handleJwtException(response, "Invalid JWT token: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
         }
-        filterChain.doFilter(request, response);
 
     }
 
@@ -76,7 +90,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             };
         }
 
-        // TODO: Get and verify from requesting url
         String clientSource = request.getRemoteAddr();
         String userToken = authHeader.substring(7);
 
@@ -104,6 +117,15 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         return false;
+    }
+
+    private void handleJwtException(HttpServletResponse response, String message, HttpStatus status)
+            throws IOException {
+        response.setStatus(status.value());
+        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+
+        DefaultDTO errorResponse = new DefaultDTO(message, status.value());
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 
 }

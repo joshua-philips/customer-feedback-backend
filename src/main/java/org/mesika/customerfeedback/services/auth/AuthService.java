@@ -70,6 +70,13 @@ public class AuthService {
         String accessToken = jwtService.generateToken(user);
         String refreshToken = jwtService.generateRefreshToken(user);
 
+        if (user.isMfaEnabled()) {
+            boolean isCodeValid = verifyTotp(user.getUsername(), request.getCode());
+            if (!isCodeValid) {
+                throw new BadCredentialsException("Valid code required");
+            }
+        }
+
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
                 .fullName(user.getFirstName() + " "
@@ -173,14 +180,21 @@ public class AuthService {
         return new DefaultDTO("Password updated successfully");
     }
 
-    public BufferedImage totpRequest(HttpServletRequest request) throws AuthException, WriterException {
-        ApplicationUser user = isCorrectUserFromHeaderToken(request);
+    public BufferedImage totpRequest(LoginRequest request) throws AuthException, WriterException {
+        authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(
+                        request.getUsername(),
+                        request.getPassword()));
+
+        ApplicationUser user = userRepository.findByUsername(request.getUsername())
+                .orElseThrow();
 
         String secret = mfaService.generateKey();
 
         user.setMfaEnabled(true);
         user.setMfaSecret(secret);
         userRepository.save(user);
+        createPasswordResetToken(user);
 
         return mfaService
                 .generateQRImage(secret, user.getUsername());

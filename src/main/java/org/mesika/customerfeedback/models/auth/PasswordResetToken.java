@@ -55,7 +55,7 @@ public class PasswordResetToken {
     private Instant lastModified;
 
     @CreatedBy
-    @Column(name = "created_by", updatable = false, length = 50)
+    @Column(name = "created_by", updatable = false, length = 100)
     private String createdBy;
 
     public PasswordResetToken(String token) {

@@ -55,7 +55,7 @@ public class ClientController {
 
     @GetMapping("/identity-provider/list")
     public ResponseEntity<CustomPage<ClientIdentityProviderDTO>> listClientIDPs(
-            @RequestParam(name = "client_id") UUID clientId,
+            @RequestParam(name = "client_id", required = false) UUID clientId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(name = "page_size", defaultValue = "20") int pageSize) {
         return ResponseEntity.ok(clientService

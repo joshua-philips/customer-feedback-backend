@@ -122,7 +122,7 @@ public class ClientAuthService {
 
     private boolean isAdmin(String[] roles, String adminRole) {
         for (String role : roles) {
-            if (adminRole.equals(role.trim())) {
+            if (role.contains(adminRole)) {
                 return true;
             }
         }

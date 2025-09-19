@@ -1,10 +1,11 @@
 package org.mesika.customerfeedback.services.auth;
 
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
-import java.awt.image.BufferedImage;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -17,9 +18,12 @@ import com.warrenstrange.googleauth.GoogleAuthenticatorConfig;
 import com.warrenstrange.googleauth.GoogleAuthenticatorKey;
 import com.warrenstrange.googleauth.GoogleAuthenticatorQRGenerator;
 
+import lombok.RequiredArgsConstructor;
+
 @Service
+@RequiredArgsConstructor
 public class MfaService {
-    private static final String ISSUER = "Mesika Limited";
+    private final Environment env;
 
     public String generateKey() {
         GoogleAuthenticator gAuth = new GoogleAuthenticator();
@@ -35,7 +39,7 @@ public class MfaService {
 
     public BufferedImage generateQRImage(String secret, String username) throws WriterException {
         String url = GoogleAuthenticatorQRGenerator.getOtpAuthTotpURL(
-                ISSUER,
+                env.getProperty("spring.application.name"),
                 username,
                 new GoogleAuthenticatorKey.Builder(secret).build());
         return generateQRImage(url);

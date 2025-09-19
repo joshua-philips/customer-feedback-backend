@@ -31,7 +31,7 @@ public class SecurityConfiguration {
 
         private final String[] anyMatchers = {
                         "/", "/auth/**", "/api-docs", "/swagger-ui/**",
-                        "/v3/api-docs/**", "/bus/v3/api-docs/**"
+                        "/v3/api-docs/**", "/bus/v3/api-docs/**", "/customer/**"
         };
 
         private String[] adminMatchers = {};

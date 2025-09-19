@@ -5,8 +5,6 @@ import java.text.ParseException;
 import java.util.NoSuchElementException;
 
 import org.mesika.customerfeedback.dto.DefaultDTO;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,18 +15,18 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
+import io.jsonwebtoken.ExpiredJwtException;
+import io.jsonwebtoken.JwtException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.security.auth.message.AuthException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ControllerAdvice
 public class RestExceptionHandler extends ResponseEntityExceptionHandler {
-        private final Logger log = LoggerFactory.getLogger(getClass());
 
         @ExceptionHandler(NoSuchElementException.class)
         public ResponseEntity<Object> handleNoSuchElementException(HttpServletRequest request,
                         NoSuchElementException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value()),
                                 HttpStatus.NOT_FOUND);
@@ -37,7 +35,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(EntityNotFoundException.class)
         public ResponseEntity<Object> handleEntityNotFoundException(HttpServletRequest request,
                         EntityNotFoundException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(), HttpStatus.NOT_FOUND.value()),
                                 HttpStatus.NOT_FOUND);
@@ -46,7 +43,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(AuthenticationException.class)
         public ResponseEntity<Object> handleAuthenticationException(HttpServletRequest request,
                         AuthenticationException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(), HttpStatus.FORBIDDEN.value()),
                                 HttpStatus.FORBIDDEN);
@@ -55,7 +51,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
         public ResponseEntity<Object> handleSQLIntegrityConstraintViolationException(HttpServletRequest request,
                         SQLIntegrityConstraintViolationException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO("There was a problem with your request",
                                                 HttpStatus.BAD_REQUEST.value()),
@@ -65,7 +60,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(AuthException.class)
         public ResponseEntity<Object> handleAuthException(HttpServletRequest request,
                         AuthException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value()),
                                 HttpStatus.BAD_REQUEST);
@@ -74,7 +68,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(HttpClientErrorException.class)
         public ResponseEntity<Object> handleHttpClientErrorException(HttpServletRequest request,
                         HttpClientErrorException exception) {
-                log.error(exception.getClass() + ": " + exception.getMessage());
+
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getResponseBodyAsString(),
                                                 HttpStatus.BAD_REQUEST.value()),
@@ -84,7 +78,7 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(ParseException.class)
         public ResponseEntity<Object> handleParseException(HttpServletRequest request,
                         ParseException exception) {
-                log.error(exception.getClass() + ": " + exception.getMessage());
+
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(),
                                                 HttpStatus.BAD_REQUEST.value()),
@@ -94,7 +88,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(DataIntegrityViolationException.class)
         public ResponseEntity<Object> handleDataIntegrityViolationException(HttpServletRequest request,
                         DataIntegrityViolationException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(),
                                                 HttpStatus.BAD_REQUEST.value()),
@@ -104,20 +97,34 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         @ExceptionHandler(AuthorizationDeniedException.class)
         public ResponseEntity<Object> handleAuthorizationDeniedException(HttpServletRequest request,
                         AuthorizationDeniedException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(),
-                                                HttpStatus.BAD_REQUEST.value()),
-                                HttpStatus.BAD_REQUEST);
+                                                HttpStatus.UNAUTHORIZED.value()),
+                                HttpStatus.UNAUTHORIZED);
         }
 
         @ExceptionHandler(UsernameAlreadyExistsException.class)
         public ResponseEntity<Object> handleUsernameAlreadyExistsException(HttpServletRequest request,
                         UsernameAlreadyExistsException exception) {
-                log.info(exception.getClass() + ": " + exception.getMessage());
                 return new ResponseEntity<Object>(
                                 new DefaultDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value()),
                                 HttpStatus.BAD_REQUEST);
+        }
+
+        @ExceptionHandler(JwtException.class)
+        public ResponseEntity<Object> handleJwtException(HttpServletRequest request,
+                        JwtException exception) {
+                return new ResponseEntity<Object>(
+                                new DefaultDTO(exception.getMessage(), HttpStatus.UNAUTHORIZED.value()),
+                                HttpStatus.UNAUTHORIZED);
+        }
+
+        @ExceptionHandler(ExpiredJwtException.class)
+        public ResponseEntity<Object> handleExpiredJwtException(HttpServletRequest request,
+                        ExpiredJwtException exception) {
+                return new ResponseEntity<Object>(
+                                new DefaultDTO(exception.getMessage(), HttpStatus.UNAUTHORIZED.value()),
+                                HttpStatus.UNAUTHORIZED);
         }
 
 }

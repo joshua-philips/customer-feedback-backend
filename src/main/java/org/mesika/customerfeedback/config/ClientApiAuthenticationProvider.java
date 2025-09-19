@@ -35,8 +35,9 @@ public class ClientApiAuthenticationProvider implements AuthenticationProvider {
             if (authResponse != null && authResponse.isValid()) {
                 // Build authorities
                 List<SimpleGrantedAuthority> authorities = Arrays.stream(authResponse.getRoles())
-                        .map(role -> new SimpleGrantedAuthority("Client" + role.trim().toUpperCase()))
+                        .map(role -> new SimpleGrantedAuthority(role.trim()))
                         .collect(Collectors.toList());
+                authorities.add(new SimpleGrantedAuthority("Client"));
 
                 if (authResponse.isAdmin()) {
                     authorities.add(new SimpleGrantedAuthority("Client Admin"));

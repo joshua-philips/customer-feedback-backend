@@ -74,9 +74,8 @@ public class AuthController {
                 .ok(authService.changePasswordWithToken(token, password));
     }
 
-    @SecurityRequirement(name = "Authorization")
-    @GetMapping("/totp-request")
-    public void totpRequest(HttpServletRequest request, HttpServletResponse response)
+    @PostMapping("/totp-request")
+    public void totpRequest(@RequestBody LoginRequest request, HttpServletResponse response)
             throws AuthException, WriterException {
         BufferedImage image = authService.totpRequest(request);
         if (image != null) {
