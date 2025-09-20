@@ -1,42 +1,46 @@
-package org.mesika.customerfeedback.models.clients;
+package org.mesika.customerfeedback.models.tickets;
 
 import java.time.Instant;
+import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "modules")
+@Table(name = "ticket_comments")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @EntityListeners(AuditingEntityListener.class)
-public class Module {
+public class Comment {
     @Id
-    @GeneratedValue
-    private Long id;
+    @UuidGenerator(style = UuidGenerator.Style.RANDOM)
+    private UUID id;
 
-    @Column(unique = true, nullable = false, length = 100)
-    private String name;
+    @Column(nullable = false, length = 4000)
+    private String content;
 
-    @Column(length = 500)
-    private String description;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ticket_id", nullable = false)
+    private Ticket ticket;
 
     @CreatedDate
     @Column(name = "created_date", nullable = false, updatable = false)
@@ -52,9 +56,6 @@ public class Module {
 
     @LastModifiedBy
     @Column(name = "last_modified_by", insertable = false, length = 100)
-    private String modified_by;
+    private String modifiedBy;
 
-    @ManyToOne(cascade = { CascadeType.MERGE, CascadeType.DETACH })
-    @JoinColumn(name = "client_id")
-    private Client client;
 }

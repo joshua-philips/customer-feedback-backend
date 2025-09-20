@@ -127,4 +127,12 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
                                 HttpStatus.UNAUTHORIZED);
         }
 
+        @ExceptionHandler(RuntimeException.class)
+        public ResponseEntity<Object> handleRuntimeException(HttpServletRequest request,
+                        RuntimeException exception) {
+                return new ResponseEntity<Object>(
+                                new DefaultDTO(exception.getMessage(), HttpStatus.BAD_REQUEST.value()),
+                                HttpStatus.BAD_REQUEST);
+        }
+
 }

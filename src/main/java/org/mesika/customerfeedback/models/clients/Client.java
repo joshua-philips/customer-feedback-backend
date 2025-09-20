@@ -5,6 +5,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
+import org.mesika.customerfeedback.models.tickets.Ticket;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -69,5 +70,9 @@ public class Client {
     @LastModifiedBy
     @Column(name = "last_modified_by", insertable = false, length = 100)
     private String modified_by;
+
+    @OneToMany(mappedBy = "client", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH,
+            CascadeType.DETACH })
+    private Set<Ticket> clientTickets;
 
 }

@@ -1,6 +1,7 @@
 package org.mesika.customerfeedback.models.tickets;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -12,6 +13,7 @@ import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -21,6 +23,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -54,6 +57,8 @@ public class Ticket {
     @Column(nullable = false, length = 2000)
     private String description;
 
+    private String module;
+
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Priority priority;
@@ -85,4 +90,29 @@ public class Ticket {
     @LastModifiedBy
     @Column(name = "last_modified_by", insertable = false, length = 100)
     private String modified_by;
+
+    @OneToMany(mappedBy = "ticket", cascade = { CascadeType.MERGE, CascadeType.REFRESH,
+            CascadeType.DETACH }, fetch = FetchType.LAZY)
+    private List<Comment> comments;
+
+    public void assignTo(ApplicationUser user) {
+        if (this.assignedTo != null) {
+            this.assignedTo.getAssignedTickets().remove(this);
+        }
+
+        this.assignedTo = user;
+        if (user != null) {
+            user.getAssignedTickets().add(this);
+        }
+    }
+
+    public void addComment(Comment comment) {
+        comments.add(comment);
+        comment.setTicket(this);
+    }
+
+    public void removeComment(Comment comment) {
+        comments.remove(comment);
+        comment.setTicket(null);
+    }
 }

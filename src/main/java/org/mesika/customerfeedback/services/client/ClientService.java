@@ -22,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -141,8 +142,16 @@ public class ClientService {
         return new DefaultDTO("Identity Provider deleted successfully");
     }
 
-    public List<ModuleDTO> listClientModules(UUID clientId) {
-        return moduleRepository.findByClient_Id(clientId).stream()
+    public List<ModuleDTO> listClientModules(UUID clientId, HttpServletRequest servletRequest) {
+
+        UUID useClientId = clientId;
+
+        if (clientId == null) {
+            Client client = clientRepository.findBySource(servletRequest.getRemoteHost()).orElseThrow();
+            useClientId = client.getId();
+        }
+
+        return moduleRepository.findByClient_Id(useClientId).stream()
                 .map(module -> {
                     ModuleDTO dto = modelMapper.map(module, ModuleDTO.class);
                     return dto;

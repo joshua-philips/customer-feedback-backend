@@ -57,6 +57,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             handleJwtException(response, "JWT token has expired", HttpStatus.UNAUTHORIZED);
         } catch (JwtException | IllegalArgumentException ex) {
             handleJwtException(response, "Invalid JWT token: " + ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        } catch (Exception ex) {
+            handleJwtException(response, ex.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
     }

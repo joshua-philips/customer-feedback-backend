@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
+import org.mesika.customerfeedback.models.tickets.Ticket;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,12 +15,14 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -86,8 +89,22 @@ public class ApplicationUser implements UserDetails {
     @Column(name = "mfa_secret")
     private String mfaSecret;
 
+    @OneToMany(mappedBy = "assignedTo", fetch = FetchType.LAZY, cascade = { CascadeType.MERGE, CascadeType.REFRESH,
+            CascadeType.DETACH })
+    private Set<Ticket> assignedTickets;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles;
+    }
+
+    public void addTicket(Ticket ticket) {
+        assignedTickets.add(ticket);
+        ticket.setAssignedTo(this);
+    }
+
+    public void removeTicket(Ticket ticket) {
+        assignedTickets.remove(ticket);
+        ticket.setAssignedTo(null);
     }
 }

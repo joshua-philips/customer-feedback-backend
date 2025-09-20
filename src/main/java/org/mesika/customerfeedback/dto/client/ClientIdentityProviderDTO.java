@@ -22,14 +22,6 @@ public class ClientIdentityProviderDTO {
     private UUID id;
 
     // TODO: Point to client
-    // @JsonProperty(value = "client_id", access = Access.READ_ONLY)
-    // private UUID clientId;
-
-    // @JsonProperty(value = "client_name", access = Access.READ_ONLY)
-    // private String clientName;
-
-    // @JsonProperty(value = "client_source", access = Access.READ_ONLY)
-    // private String clientSource;
 
     @NonNull
     @JsonProperty("verify_url")

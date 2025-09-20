@@ -83,7 +83,7 @@ public class ClientController {
     @GetMapping("/modules/list")
     public ResponseEntity<List<ModuleDTO>> listClientModules(
             @RequestParam(name = "client_id") UUID clientId) {
-        return ResponseEntity.ok(clientService.listClientModules(clientId));
+        return ResponseEntity.ok(clientService.listClientModules(clientId, null));
 
     }
 
